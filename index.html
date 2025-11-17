@@ -3,74 +3,607 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style> 
-        body { 
-            background-color: lightblue;
-            font-family: Arial, sans-serif;
+    <title>Modern Grocery List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
         }
-        h1 {
-            color: darkblue;
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
-        ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        li {
-            font-size: 1.2rem;
-            padding: 8px 0;
-        }
-        button{
-            background-color: darkblue;
+        
+        .header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: white;
-            border: none;
-            padding: auto;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 25px 30px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .stats div {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stats span {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2575fc;
+        }
+        
+        .add-item-form {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        
+        .add-item-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .add-item-input:focus {
+            outline: none;
+            border-color: #2575fc;
+        }
+        
+        .grocery-list {
+            list-style-type: none;
+            margin-bottom: 25px;
+        }
+        
+        .grocery-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .grocery-item:hover {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        
+        .grocery-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checkbox-container {
+            position: relative;
+            margin-right: 15px;
+        }
+        
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
             cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        
+        .checkmark {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 24px;
+            width: 24px;
+            background-color: #f0f0f0;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: #4CAF50;
+        }
+        
+        .checkmark:after {
+            content: "";
+            display: none;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            margin-top: -2px;
+        }
+        
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+        
+        .item-label {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #333;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        .item-icon {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .checked .item-label {
+            text-decoration: line-through;
+            color: #888;
+            opacity: 0.7;
+        }
+        
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            padding: 5px;
             border-radius: 5px;
         }
-        button:hover{
-            background-color: navy;
+        
+        .grocery-item:hover .delete-btn {
+            opacity: 1;
         }
-        button:active{
-            background-color: black;
+        
+        .delete-btn:hover {
+            background-color: rgba(255, 107, 107, 0.1);
+        }
+        
+        .instructions {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 15px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .clear-btn {
+            background-color: #ff6b6b;
+            color: white;
+        }
+        
+        .clear-btn:hover {
+            background-color: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .clear-btn:active {
+            transform: translateY(0);
+        }
+        
+        .add-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .add-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        
+        .add-btn:active {
+            transform: translateY(0);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+        }
+        
+        .empty-state p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .button-container {
+                flex-direction: column;
+            }
+            
+            .add-item-form {
+                flex-direction: column;
+            }
         }
     </style>
-</head> 
+</head>
 <body>
-    <h1>Grocery List</h1>
-    <p>Don't forget to buy</p>
-    <ul>
-        <li><input type="checkbox" id="item 1"> <label for="item 1">🥛 Milk</label></li>
-        <li><input type="checkbox" id="item 2"> <label for="item 2">🍞 Bread</label></li>
-        <li><input type="checkbox" id="item 3"> <label for="item 3">🥚 Eggs</label></li>
-        <li><input type="checkbox" id="item 4"> <label for="item 4">🍎 Apples</label></li>
-        <li><input type="checkbox" id="item 5"> <label for="item 5">🍌 Bananas</label></li>
-    </ul>
-    <p>Click on the checkbox to mark an item as bought</p>
-    <button>Clear All</button>
+    <div class="container">
+        <div class="header">
+            <h1>Grocery List</h1>
+            <p class="subtitle">Your shopping companion</p>
+        </div>
+        
+        <div class="content">
+            <div class="stats">
+                <div>
+                    <span id="total-items">5</span>
+                    Total Items
+                </div>
+                <div>
+                    <span id="bought-items">0</span>
+                    Bought
+                </div>
+                <div>
+                    <span id="remaining-items">5</span>
+                    Remaining
+                </div>
+            </div>
+            
+            <div class="add-item-form">
+                <input type="text" class="add-item-input" id="new-item-input" placeholder="Add a new item...">
+                <button class="add-btn" id="add-item-btn">Add</button>
+            </div>
+            
+            <ul class="grocery-list" id="grocery-list">
+                <li class="grocery-item">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="item1">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label for="item1" class="item-label">
+                        <span class="item-icon">🥛</span> Milk
+                    </label>
+                    <button class="delete-btn">×</button>
+                </li>
+                <li class="grocery-item">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="item2">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label for="item2" class="item-label">
+                        <span class="item-icon">🍞</span> Bread
+                    </label>
+                    <button class="delete-btn">×</button>
+                </li>
+                <li class="grocery-item">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="item3">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label for="item3" class="item-label">
+                        <span class="item-icon">🥚</span> Eggs
+                    </label>
+                    <button class="delete-btn">×</button>
+                </li>
+                <li class="grocery-item">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="item4">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label for="item4" class="item-label">
+                        <span class="item-icon">🍎</span> Apples
+                    </label>
+                    <button class="delete-btn">×</button>
+                </li>
+                <li class="grocery-item">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="item5">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label for="item5" class="item-label">
+                        <span class="item-icon">🍌</span> Bananas
+                    </label>
+                    <button class="delete-btn">×</button>
+                </li>
+            </ul>
+            
+            <p class="instructions">Click on the checkbox to mark an item as bought</p>
+            
+            <div class="button-container">
+                <button class="clear-btn" id="clear-btn">Clear All</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox =>{
-            checkbox.addEventListener('change',function(){ 
-                const label = document.querySelector(`label[for="${this.id}"]`);
-                if(this.checked){
-                    label.style.textDecoration = 'line-through';
-                    label.style.opacity = '0.6';
-                } else {
-                    label.style.textDecoration = 'none';
-                    label.style.opacity = '1'; 
+        // Emoji mapping for common grocery items
+        const emojiMap = {
+            'milk': '🥛',
+            'bread': '🍞',
+            'eggs': '🥚',
+            'apple': '🍎',
+            'apples': '🍎',
+            'banana': '🍌',
+            'bananas': '🍌',
+            'carrot': '🥕',
+            'carrots': '🥕',
+            'broccoli': '🥦',
+            'cheese': '🧀',
+            'fish': '🐟',
+            'meat': '🥩',
+            'chicken': '🍗',
+            'rice': '🍚',
+            'pasta': '🍝',
+            'tomato': '🍅',
+            'tomatoes': '🍅',
+            'potato': '🥔',
+            'potatoes': '🥔',
+            'onion': '🧅',
+            'onions': '🧅',
+            'garlic': '🧄',
+            'avocado': '🥑',
+            'avocados': '🥑',
+            'orange': '🍊',
+            'oranges': '🍊',
+            'strawberry': '🍓',
+            'strawberries': '🍓',
+            'grapes': '🍇',
+            'watermelon': '🍉',
+            'pineapple': '🍍',
+            'lemon': '🍋',
+            'lemons': '🍋',
+            'pepper': '🫑',
+            'peppers': '🫑',
+            'mushroom': '🍄',
+            'mushrooms': '🍄',
+            'corn': '🌽',
+            'cucumber': '🥒',
+            'cucumbers': '🥒',
+            'lettuce': '🥬',
+            'spinach': '🍃',
+            'oil': '🛢️',
+            'salt': '🧂',
+            'pepper': '🌶️',
+            'honey': '🍯',
+            'coffee': '☕',
+            'tea': '🍵',
+            'juice': '🧃',
+            'soda': '🥤',
+            'water': '💧',
+            'wine': '🍷',
+            'beer': '🍺',
+            'cookie': '🍪',
+            'cookies': '🍪',
+            'cake': '🍰',
+            'chocolate': '🍫',
+            'ice cream': '🍦',
+            'yogurt': '🥛',
+            'butter': '🧈',
+            'flour': '🌾',
+            'sugar': '🍚'
+        };
+        
+        
+        function getEmojiForItem(itemName) {
+            const lowerName = itemName.toLowerCase();
+            
+            
+            if (emojiMap[lowerName]) {
+                return emojiMap[lowerName];
+            }
+            
+            
+            for (const [key, emoji] of Object.entries(emojiMap)) {
+                if (lowerName.includes(key)) {
+                    return emoji;
                 }
+            }
+            
+            
+            return '🛒';
+        }
+        
+        
+        function generateId() {
+            return 'item-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+        }
+        
+        
+        function updateStats() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const totalItems = checkboxes.length;
+            const boughtItems = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const remainingItems = totalItems - boughtItems;
+            
+            document.getElementById('total-items').textContent = totalItems;
+            document.getElementById('bought-items').textContent = boughtItems;
+            document.getElementById('remaining-items').textContent = remainingItems;
+            
+            
+            const groceryList = document.getElementById('grocery-list');
+            if (totalItems === 0) {
+                groceryList.innerHTML = `
+                    <div class="empty-state">
+                        <p>Your grocery list is empty</p>
+                        <p>Add some items to get started!</p>
+                    </div>
+                `;
+            }
+        }
+        
+        
+        function addGroceryItem(itemName) {
+            if (!itemName.trim()) return;
+            
+            const groceryList = document.getElementById('grocery-list');
+            
+            
+            if (groceryList.querySelector('.empty-state')) {
+                groceryList.innerHTML = '';
+            }
+            
+            const itemId = generateId();
+            const emoji = getEmojiForItem(itemName);
+            
+            const listItem = document.createElement('li');
+            listItem.className = 'grocery-item';
+            listItem.innerHTML = `
+                <label class="checkbox-container">
+                    <input type="checkbox" id="${itemId}">
+                    <span class="checkmark"></span>
+                </label>
+                <label for="${itemId}" class="item-label">
+                    <span class="item-icon">${emoji}</span> ${itemName}
+                </label>
+                <button class="delete-btn">×</button>
+            `;
+            
+            groceryList.appendChild(listItem);
+            
+            
+            const newCheckbox = listItem.querySelector('input[type="checkbox"]');
+            newCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    listItem.classList.add('checked');
+                } else {
+                    listItem.classList.remove('checked');
+                }
+                updateStats();
             });
-        });
-        document.querySelector('button').addEventListener('click', function(){
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox =>{
-                checkbox.checked = false;
-                const label = document.querySelector(`label[for="${checkbox.id}"]`);
-                label.style.textDecoration = 'none';
-                label.style.opacity = '1'; 
+            
+            
+            const deleteBtn = listItem.querySelector('.delete-btn');
+            deleteBtn.addEventListener('click', function() {
+                listItem.remove();
+                updateStats();
+            });
+            
+            
+            document.getElementById('new-item-input').value = '';
+            
+            updateStats();
+        }
+        
+        
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const listItem = this.closest('.grocery-item');
+                if (this.checked) {
+                    listItem.classList.add('checked');
+                } else {
+                    listItem.classList.remove('checked');
+                }
+                updateStats();
             });
         });
         
+        
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                this.closest('.grocery-item').remove();
+                updateStats();
+            });
+        });
+        
+        
+        document.getElementById('clear-btn').addEventListener('click', function() {
+            document.querySelectorAll('.grocery-item').forEach(item => {
+                item.remove();
+            });
+            updateStats();
+        });
+        
+        
+        document.getElementById('add-item-btn').addEventListener('click', function() {
+            const input = document.getElementById('new-item-input');
+            addGroceryItem(input.value);
+        });
+        
+        
+        document.getElementById('new-item-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addGroceryItem(this.value);
+            }
+        });
+        
+        // Initialize stats on page load
+        updateStats();
     </script>
 </body>
 </html>
